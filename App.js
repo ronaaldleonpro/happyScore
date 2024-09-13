@@ -1,20 +1,54 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { View, StatusBar, StyleSheet } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import * as SplashScreen from "expo-splash-screen";
+import StepsScreen from "./src/screens/StepsScreen";
 
-export default function App() {
+// Evitar que la splash screen se oculte automáticamente
+SplashScreen.preventAutoHideAsync();
+
+const Stack = createStackNavigator();
+
+const App = () => {
+  const steps = [
+    { step: 1, description: "Separa los materiales reciclables del resto de la basura." },
+    { step: 2, description: "Lava los envases antes de reciclarlos." },
+    { step: 3, description: "Identifica los contenedores de reciclaje de tu área." },
+    { step: 4, description: "Coloca los materiales reciclables en los contenedores correspondientes." },
+  ];
+
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    setAppIsReady(true);
+    SplashScreen.hideAsync();
+  }, []);
+
+  if (!appIsReady) {
+    return null; // Muestra pantalla en blanco mientras la splash screen está activa
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Pasos de Reciclaje">
+            {(props) => <StepsScreen {...props} steps={steps} />}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
       <StatusBar style="auto" />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    /*backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center',*/
   },
 });
+export default App;
