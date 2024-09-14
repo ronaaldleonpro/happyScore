@@ -18,6 +18,7 @@ const StepsScreen = ({ steps, navigation }) => {
     <StepScreen
       step={steps[currentStep].step}
       description={steps[currentStep].description}
+      title={steps[currentStep].title}
       onNextStep={handleNextStep}
     />
   );

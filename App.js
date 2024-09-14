@@ -12,7 +12,7 @@ const Stack = createStackNavigator();
 
 const App = () => {
   const steps = [
-    { step: 1, description: "Separa los materiales reciclables del resto de la basura." },
+    { step: 1, title: "Tipos de ingresos" },
     { step: 2, description: "Lava los envases antes de reciclarlos." },
     { step: 3, description: "Identifica los contenedores de reciclaje de tu área." },
     { step: 4, description: "Coloca los materiales reciclables en los contenedores correspondientes." },
@@ -33,7 +33,7 @@ const App = () => {
     <View style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Pasos de Reciclaje">
+          <Stack.Screen name="HAPPYSCORE">
             {(props) => <StepsScreen {...props} steps={steps} />}
           </Stack.Screen>
         </Stack.Navigator>
@@ -46,9 +46,6 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    /*backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',*/
   },
 });
 export default App;
