@@ -12,10 +12,9 @@ const Stack = createStackNavigator();
 
 const App = () => {
   const steps = [
-    { step: 1, title: "Tipos de ingresos" },
-    { step: 2, description: "Lava los envases antes de reciclarlos." },
-    { step: 3, description: "Identifica los contenedores de reciclaje de tu área." },
-    { step: 4, description: "Coloca los materiales reciclables en los contenedores correspondientes." },
+    { step: 1, title: "INGRESOS" },
+    { step: 2, title: "EGRESOS" },
+    { step: 4, title: "ANALISIS DE CLIENTE" },
   ];
 
   const [appIsReady, setAppIsReady] = useState(false);

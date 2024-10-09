@@ -18,10 +18,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/LogoHappyScore.png",
         "backgroundColor": "#161F26"
-      }
+      },
+      "package": "com.ronaaldleon.happyScore"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c89e44a9-180a-47a8-aa7f-fed32877f6f0"
+      }
     }
   }
 }
