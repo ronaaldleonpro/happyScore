@@ -1,7 +1,7 @@
 import React from 'react';
 import StepScreen from './StepScreen';
 
-const StepsScreen = ({ steps, navigation }) => {
+const StepsScreen = ({ steps, navigation, savedData, setSavedData }) => {
   const [currentStep, setCurrentStep] = React.useState(0);
 
   const handleNextStep = () => {
@@ -9,7 +9,7 @@ const StepsScreen = ({ steps, navigation }) => {
       setCurrentStep(currentStep + 1);
     } else {
       // Si estamos en el último paso, podemos navegar a otra pantalla o reiniciar los pasos
-      //navigation.navigate('Inicio'); // Esto es solo un ejemplo, puedes cambiarlo según tu flujo de la aplicación
+      navigation.navigate('Data'); // Navegar a la pantalla de datos, o reiniciar
       setCurrentStep(0);
     }
   };
@@ -20,6 +20,9 @@ const StepsScreen = ({ steps, navigation }) => {
       description={steps[currentStep].description}
       title={steps[currentStep].title}
       onNextStep={handleNextStep}
+      navigation={navigation} // Asegúrate de pasar la navegación también
+      savedData={savedData} // Agregar esta línea
+      setSavedData={setSavedData} // Agregar esta línea
     />
   );
 };

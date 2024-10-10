@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import {
   View,
   Text,
@@ -6,12 +6,13 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert, // Importar el componente Alert
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 
-const StepScreen = ({ step, title, description, onNextStep }) => {
+const StepScreen = ({ step, title, description, onNextStep, navigation, savedData, setSavedData }) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(false);
+  const [value, setValue] = useState(null); // Cambiar valor inicial a null
   const [items, setItems] = useState([
     { label: "Salario", value: "salario" },
     { label: "Negocio Propio", value: "negocioPropio" },
@@ -19,15 +20,61 @@ const StepScreen = ({ step, title, description, onNextStep }) => {
     { label: "Remesas", value: "remesas" },
     { label: "Ingresos Varios", value: "ingresosVarios" },
   ]);
-  const [number, onChangeNumber] = React.useState("");
+  const [number, onChangeNumber] = useState("");
+  const [shouldNavigate, setShouldNavigate] = useState(false); // Nuevo estado para manejar la navegación
 
-  // Mostrar el DropDownPicker solo en el paso específico indicado por combox
-  const shouldShowDropDownPicker = step === 1;
+  const handleContinue = () => {
+    if (!value || !number) {
+      Alert.alert("Error", "Por favor selecciona una opción y coloca un monto");
+      return;
+    }
+
+    const newEntry = { type: value, amount: number };
+
+    const existingEntryIndex = savedData.findIndex((item) => item.type === value);
+    
+    if (existingEntryIndex !== -1) {
+      const updatedData = [...savedData];
+      updatedData[existingEntryIndex] = newEntry;
+      setSavedData(updatedData);
+    } else {
+      setSavedData([...savedData, newEntry]);
+    }
+
+    // Alerta de confirmación
+    Alert.alert(
+      "Confirmar",
+      "¿Deseas llenar otro campo?",
+      [
+        {
+          text: "Sí",
+          onPress: () => {
+            setValue(null);
+            onChangeNumber("");
+          },
+        },
+        {
+          text: "No",
+          onPress: () => setShouldNavigate(true), // Cambiar el estado para que se navegue después
+          style: "cancel",
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+    // useEffect para detectar el cambio en shouldNavigate y ejecutar la navegación
+    useEffect(() => {
+      if (shouldNavigate) {
+        navigation.navigate("Data", { savedData }); 
+        setShouldNavigate(false); // Resetear la variable para evitar loops
+      }
+    }, [shouldNavigate, savedData]);
 
   return (
     <View style={styles.containerView}>
       <Text style={styles.stepText}>{title}</Text>
-      {shouldShowDropDownPicker && (
+      {step === 1 && (
         <View style={styles.dropdownContainer}>
           <TextInput style={styles.dropDownTitle}>Tipo de ingreso</TextInput>
           <View style={styles.dropDownElement}>
@@ -75,10 +122,7 @@ const StepScreen = ({ step, title, description, onNextStep }) => {
         </View>
       )}
       <Text style={styles.descriptionText}>{description}</Text>
-      <TouchableOpacity
-        onPress={onNextStep}
-        style={styles.btnContinuarContainer}
-      >
+      <TouchableOpacity onPress={handleContinue} style={styles.btnContinuarContainer}>
         <Text style={styles.btnContinuar}>Continuar</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={onNextStep} style={styles.btnSalirContainer}>
@@ -94,11 +138,9 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#161F26",
     alignItems: "center",
-    //paddingTop: 50,
     justifyContent: "space-around",
   },
   dropdownContainer: {
-    //marginTop: 20,
     width: "90%",
     alignItems: "center",
   },
@@ -154,30 +196,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#FFF",
   },
-
-  errorText: {
-    color: "red",
-    fontSize: 20,
-  },
-  containerFormik: {
-    backgroundColor: "#BFA77A",
-    height: "100%",
-  },
-  dropDownTitle: {
-    color: "#FFF",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  dropDownElement: {
-    marginTop: 20,
-    //marginBottom: 20,
-  },
   inputAmountElement: {
     width: "100%",
     height: "auto",
     alignItems: "center",
     marginTop: 20,
-    //marginBottom: 20,
   },
   inputAmountTitle: {
     color: "#FFF",
@@ -203,7 +226,6 @@ const styles = StyleSheet.create({
     width: 350,
     alignItems: "center",
     justifyContent: "center",
-    //marginTop: 40,
   },
   btnContinuar: {
     color: "#FFFFFF",
@@ -217,7 +239,6 @@ const styles = StyleSheet.create({
     width: 350,
     alignItems: "center",
     justifyContent: "center",
-    //marginTop: 40,
   },
   btnSalir: {
     color: "#FFFFFF",

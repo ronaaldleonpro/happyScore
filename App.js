@@ -3,9 +3,9 @@ import { View, StatusBar, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as SplashScreen from "expo-splash-screen";
-import StepsScreen from "./src/screens/StepsScreen";
+import StepsScreen from "./src/screens/StepsScreen.js";
+import DataScreen from "./src/screens/Data.js";
 
-// Evitar que la splash screen se oculte automáticamente
 SplashScreen.preventAutoHideAsync();
 
 const Stack = createStackNavigator();
@@ -18,6 +18,7 @@ const App = () => {
   ];
 
   const [appIsReady, setAppIsReady] = useState(false);
+  const [savedData, setSavedData] = useState([]); // Inicializar savedData como un array vacío
 
   useEffect(() => {
     setAppIsReady(true);
@@ -25,7 +26,7 @@ const App = () => {
   }, []);
 
   if (!appIsReady) {
-    return null; // Muestra pantalla en blanco mientras la splash screen está activa
+    return null;
   }
 
   return (
@@ -33,7 +34,17 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="HAPPYSCORE" options={{ headerShown: false }}>
-            {(props) => <StepsScreen {...props} steps={steps} />}
+            {(props) => (
+              <StepsScreen
+                {...props}
+                steps={steps}
+                savedData={savedData} // Pasar savedData como prop
+                setSavedData={setSavedData} // Pasar el setter como prop
+              />
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="Data">
+            {(props) => <DataScreen {...props} savedData={savedData} />}
           </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
@@ -47,4 +58,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
 export default App;
