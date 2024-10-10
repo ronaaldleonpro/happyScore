@@ -32,7 +32,7 @@ const App = () => {
     <View style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="HAPPYSCORE">
+          <Stack.Screen name="HAPPYSCORE" options={{ headerShown: false }}>
             {(props) => <StepsScreen {...props} steps={steps} />}
           </Stack.Screen>
         </Stack.Navigator>
