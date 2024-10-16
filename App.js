@@ -3,8 +3,11 @@ import { View, StatusBar, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as SplashScreen from "expo-splash-screen";
+import Ingresos from "./src/screens/Ingresos.js";
+import Egresos from "./src/screens/Egresos.js";
 import StepsScreen from "./src/screens/StepsScreen.js";
 import DataScreen from "./src/screens/Data.js";
+import Service from "./src/screens/Service.js";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -14,7 +17,8 @@ const App = () => {
   const steps = [
     { step: 1, title: "INGRESOS" },
     { step: 2, title: "EGRESOS" },
-    { step: 4, title: "ANALISIS DE CLIENTE" },
+    { step: 3, title: "Data" },
+    { step: 4, title: "Analisis" },
   ];
 
   const [appIsReady, setAppIsReady] = useState(false);
@@ -43,8 +47,17 @@ const App = () => {
               />
             )}
           </Stack.Screen>
-          <Stack.Screen name="Data">
+          <Stack.Screen name="Ingresos" options={{ headerShown: false }}>
+            {(props) => <Ingresos {...props} savedData={savedData} />}
+          </Stack.Screen>
+          <Stack.Screen name="Egresos" options={{ headerShown: false }}>
+            {(props) => <Egresos {...props} steps={steps} />}
+          </Stack.Screen>
+          <Stack.Screen name="Data"  options={{ headerShown: false }}>
             {(props) => <DataScreen {...props} savedData={savedData} />}
+          </Stack.Screen>
+          <Stack.Screen name="Service">
+            {(props) => <Service {...props} steps={steps} />}
           </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>

@@ -10,15 +10,15 @@ import {
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 
-const StepScreen = ({ step, title, description, onNextStep, navigation, savedData, setSavedData }) => {
+const Ingresos = ({ step, title, description, onNextStep, navigation, savedData, setSavedData }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null); // Cambiar valor inicial a null
   const [items, setItems] = useState([
     { label: "Salario", value: "salario" },
-    { label: "Negocio Propio", value: "negocioPropio" },
+    { label: "Negocio propio", value: "negocioPropio" },
     { label: "Pensiones", value: "pensiones" },
     { label: "Remesas", value: "remesas" },
-    { label: "Ingresos Varios", value: "ingresosVarios" },
+    { label: "Ingresos varios", value: "ingresosVarios" },
   ]);
   const [number, onChangeNumber] = useState("");
   const [shouldNavigate, setShouldNavigate] = useState(false); // Nuevo estado para manejar la navegación
@@ -28,45 +28,50 @@ const StepScreen = ({ step, title, description, onNextStep, navigation, savedDat
       Alert.alert("Error", "Por favor selecciona una opción y coloca un monto");
       return;
     }
-
-    const newEntry = { type: value, amount: number };
-
-    const existingEntryIndex = savedData.findIndex((item) => item.type === value);
-    
-    if (existingEntryIndex !== -1) {
-      const updatedData = [...savedData];
-      updatedData[existingEntryIndex] = newEntry;
-      setSavedData(updatedData);
-    } else {
-      setSavedData([...savedData, newEntry]);
-    }
-
-    // Alerta de confirmación
-    Alert.alert(
-      "Confirmar",
-      "¿Deseas llenar otro campo?",
-      [
-        {
-          text: "Sí",
-          onPress: () => {
-            setValue(null);
-            onChangeNumber("");
+  
+    // Buscar el item seleccionado por su value
+    const selectedItem = items.find((item) => item.value === value);
+  
+    if (selectedItem) {
+      // Guardar el label en lugar del value
+      const newEntry = { label: selectedItem.label, amount: number };
+  
+      const existingEntryIndex = savedData.findIndex((item) => item.label === selectedItem.label);
+  
+      if (existingEntryIndex !== -1) {
+        const updatedData = [...savedData];
+        updatedData[existingEntryIndex] = newEntry;
+        setSavedData(updatedData);
+      } else {
+        setSavedData([...savedData, newEntry]);
+      }
+  
+      Alert.alert(
+        "Confirmar",
+        "¿Deseas llenar otro campo?",
+        [
+          {
+            text: "Sí",
+            onPress: () => {
+              setValue(null); // Restablece el valor seleccionado
+              onChangeNumber(""); // Restablece el input numérico
+            },
           },
-        },
-        {
-          text: "No",
-          onPress: () => setShouldNavigate(true), // Cambiar el estado para que se navegue después
-          style: "cancel",
-        },
-      ],
-      { cancelable: false }
-    );
+          {
+            text: "No",
+            onPress: () => setShouldNavigate(true),
+            style: "cancel",
+          },
+        ],
+        { cancelable: false }
+      );
+    }
   };
 
     // useEffect para detectar el cambio en shouldNavigate y ejecutar la navegación
     useEffect(() => {
       if (shouldNavigate) {
-        navigation.navigate("Data", { savedData }); 
+        navigation.navigate("Egresos", { savedData }); 
         setShouldNavigate(false); // Resetear la variable para evitar loops
       }
     }, [shouldNavigate, savedData]);
@@ -143,6 +148,12 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     width: "90%",
     alignItems: "center",
+  },
+  dropDownTitle:{
+    color: "#FFF",
+    marginBottom: 20,
+    fontSize: 20,
+    fontWeight: "bold",
   },
   dropDownContainerStyle: {
     width: "100%",
@@ -247,4 +258,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StepScreen;
+export default Ingresos;

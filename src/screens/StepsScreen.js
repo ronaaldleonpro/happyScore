@@ -1,5 +1,5 @@
 import React from 'react';
-import StepScreen from './StepScreen';
+import Ingresos from './Ingresos';
 
 const StepsScreen = ({ steps, navigation, savedData, setSavedData }) => {
   const [currentStep, setCurrentStep] = React.useState(0);
@@ -15,7 +15,7 @@ const StepsScreen = ({ steps, navigation, savedData, setSavedData }) => {
   };
 
   return (
-    <StepScreen
+    <Ingresos
       step={steps[currentStep].step}
       description={steps[currentStep].description}
       title={steps[currentStep].title}
