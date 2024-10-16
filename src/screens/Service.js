@@ -6,11 +6,11 @@ const Service = ({ route }) => {
 
   // Comparar los ingresos con los rangos
   const rangos = [
-    { rango: "Ingresos inferiores a 360 dólares", condition: totalIngresos < 360 },
-    { rango: "Ingresos superiores a 360 e inferiores a 700 dólares", condition: totalIngresos >= 360 && totalIngresos < 700 },
-    { rango: "Ingresos superiores a 700 e inferiores a 1200 dólares", condition: totalIngresos >= 700 && totalIngresos < 1200 },
-    { rango: "Ingresos superiores a 1200 e inferiores a 3000 dólares", condition: totalIngresos >= 1200 && totalIngresos < 3000 },
-    { rango: "Ingresos superiores a 3000 dólares", condition: totalIngresos >= 3000 },
+    { rango: "Rango 1: Ingresos inferiores a 360 dólares. Producto ofrecidos:- Apertura de cuenta", condition: totalIngresos <= 360 },
+    { rango: "Rango 2: Ingresos superiores a 360 e inferiores a 700 dólares. Producto ofrecidos:-Apertura de cuenta-Tarjera de crédito clásica-Crédito personal hasta $2,0000", condition: totalIngresos >= 360 && totalIngresos < 700 },
+    { rango: "Rango 3: Ingresos superiores a 700 e inferiores a 1200 dólares. Producto ofrecidos:-Apertura de cuenta-Tarjeta de Crédito Clásica-Tarjeta de Crédito Oro-Crédito personal hasta $8,000", condition: totalIngresos >= 700 && totalIngresos < 1200 },
+    { rango: "Rango 4: Ingresos superiores a 1200 e inferiores a 3000 dólares. Producto ofrecidos:-Apertura de cuenta-Tarjeta de Crédito Clásica-Tarjeta de Crédito Oro-Tarjeta de crédito Platinum-Crédito personal hasta $25,000", condition: totalIngresos >= 1200 && totalIngresos < 3000 },
+    { rango: "Rango 5: Ingresos superiores a 3000 dólares. Producto ofrecidos:-Apertura de cuenta-Tarjeta de Crédito Clásica-Tarjeta de Crédito Oro-Tarjeta de crédito Platinum-Tarjeta de crédito Black-Crédito personal hasta $50,000", condition: totalIngresos >= 3000 },
   ];
 
   // Filtrar los rangos en los que se encuentra el ingreso
@@ -18,7 +18,7 @@ const Service = ({ route }) => {
 
   // Verificar si los egresos son mayores que los ingresos
   const asesoramientoFinanciero = totalEgresos > totalIngresos
-    ? [{ rango: "Egresos son superiores a los ingresos. Considerar asesoramiento financiero." }]
+    ? [{ rango: "Los egresos son superiores a los ingresos:. Servicios adicionales:-Financiamiento-Consolidación de deudas-Contactar con un asesor financiero." }]
     : [];
 
     const handleContinue = () =>{
@@ -35,7 +35,7 @@ const Service = ({ route }) => {
         keyExtractor={(item) => item.rango}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-            <Text style={styles.itemText}>{item.rango}</Text>
+          <Text style={styles.itemText}>{item.rango.split('.').join('\n\n').split('-').join('\n\t\t')}</Text>
           </View>
         )}
       />
@@ -47,7 +47,7 @@ const Service = ({ route }) => {
           keyExtractor={(item) => item.rango}
           renderItem={({ item }) => (
             <View style={styles.itemContainerWarning}>
-              <Text style={styles.itemText}>{item.rango}</Text>
+              <Text style={styles.itemText}>{item.rango.split('.').join('\n\n').split('-').join('\n\t\t')}</Text>
             </View>
           )}
         />
@@ -75,13 +75,13 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     padding: 15,
-    backgroundColor: "#BFA77A",
+    //backgroundColor: "#BFA77A",
     marginVertical: 5,
     borderRadius: 10,
   },
   itemContainerWarning: {
     padding: 15,
-    backgroundColor: "#FF4C4C", // Color de advertencia
+    //backgroundColor: "#FF4C4C", // Color de advertencia
     marginVertical: 5,
     borderRadius: 10,
   },

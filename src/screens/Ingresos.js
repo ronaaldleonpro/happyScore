@@ -130,9 +130,9 @@ const Ingresos = ({ step, title, description, onNextStep, navigation, savedData,
       <TouchableOpacity onPress={handleContinue} style={styles.btnContinuarContainer}>
         <Text style={styles.btnContinuar}>Continuar</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={onNextStep} style={styles.btnSalirContainer}>
+      {/*<TouchableOpacity onPress={onNextStep} style={styles.btnSalirContainer}>
         <Text style={styles.btnSalir}>Salir</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>*/}
     </View>
   );
 };
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
-  btnSalirContainer: {
+  /*btnSalirContainer: {
     backgroundColor: "#BFA77A",
     height: 45,
     borderRadius: 10,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 20,
-  },
+  },*/
 });
 
 export default Ingresos;
