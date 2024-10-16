@@ -5,10 +5,17 @@ const Data = ({ route }) => {
   // Asegúrate de que estamos recibiendo los datos correctamente
   const { savedData = [], savedEgresos = [] } = route.params || {};
 
+  // Calcular la suma de los ingresos
+  const totalIngresos = savedData.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+  
+  // Calcular la suma de los egresos
+  const totalEgresos = savedEgresos.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Resumen de Ingresos y Egresos</Text>
 
+      {/* Mostrar lista de Ingresos */}
       <Text style={styles.sectionTitle}>Ingresos</Text>
       <FlatList
         data={savedData}
@@ -21,6 +28,13 @@ const Data = ({ route }) => {
         )}
       />
 
+      {/* Mostrar el total de ingresos */}
+      <View style={styles.totalContainer}>
+        <Text style={styles.totalLabel}>Total Ingresos:</Text>
+        <Text style={styles.totalAmount}>${totalIngresos.toFixed(2)}</Text>
+      </View>
+
+      {/* Mostrar lista de Egresos */}
       <Text style={styles.sectionTitle}>Egresos</Text>
       <FlatList
         data={savedEgresos}
@@ -32,6 +46,12 @@ const Data = ({ route }) => {
           </View>
         )}
       />
+
+      {/* Mostrar el total de egresos */}
+      <View style={styles.totalContainer}>
+        <Text style={styles.totalLabel}>Total Egresos:</Text>
+        <Text style={styles.totalAmount}>${totalEgresos.toFixed(2)}</Text>
+      </View>
     </View>
   );
 };
@@ -65,6 +85,21 @@ const styles = StyleSheet.create({
   },
   itemAmount: {
     fontSize: 18,
+    color: "#FFF",
+  },
+  totalContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 10,
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#BFA77A",
+  },
+  totalAmount: {
+    fontSize: 18,
+    fontWeight: "bold",
     color: "#FFF",
   },
 });
