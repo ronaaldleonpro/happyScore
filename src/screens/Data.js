@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 
-const Data = ({ route }) => {
+const Data = ({ route, navigation }) => {
   // Asegúrate de que estamos recibiendo los datos correctamente
   const { savedData = [], savedEgresos = [] } = route.params || {};
 
@@ -10,6 +10,10 @@ const Data = ({ route }) => {
   
   // Calcular la suma de los egresos
   const totalEgresos = savedEgresos.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+
+  const handleContinue = () =>{
+    navigation.navigate("Service", { totalIngresos, totalEgresos });
+  }
 
   return (
     <View style={styles.container}>
@@ -52,6 +56,10 @@ const Data = ({ route }) => {
         <Text style={styles.totalLabel}>Total Egresos:</Text>
         <Text style={styles.totalAmount}>${totalEgresos.toFixed(2)}</Text>
       </View>
+
+      <TouchableOpacity onPress={handleContinue} style={styles.btnContinuarContainer}>
+        <Text style={styles.btnContinuar}>Continuar</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -101,6 +109,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#FFF",
+  },
+  btnContinuarContainer: {
+    backgroundColor: "#BFA77A",
+    height: 45,
+    borderRadius: 10,
+    width: 350,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  btnContinuar: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 20,
   },
 });
 
