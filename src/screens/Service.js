@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
 
-const Service = ({ route }) => {
+const Service = ({ route, navigation }) => {
   const { totalIngresos = 0, totalEgresos = 0 } = route.params || {};
 
   // Comparar los ingresos con los rangos
@@ -22,7 +22,7 @@ const Service = ({ route }) => {
     : [];
 
     const handleContinue = () =>{
-      //Logica para desafio III
+      navigation.navigate("Registrar");
     }
 
   return (

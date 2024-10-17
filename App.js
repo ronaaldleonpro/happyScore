@@ -8,6 +8,7 @@ import Egresos from "./src/screens/Egresos.js";
 import StepsScreen from "./src/screens/StepsScreen.js";
 import DataScreen from "./src/screens/Data.js";
 import Service from "./src/screens/Service.js";
+import Registrar from "./src/screens/Registrar.js";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,6 +20,7 @@ const App = () => {
     { step: 2, title: "Egresos" },
     { step: 3, title: "Data" },
     { step: 4, title: "Service" },
+    { step: 5, title: "Registrar" },
   ];
 
   const [appIsReady, setAppIsReady] = useState(false);
@@ -63,6 +65,7 @@ const App = () => {
           <Stack.Screen name="Egresos" component={Egresos} />
           <Stack.Screen name="Data" component={DataScreen} />
           <Stack.Screen name="Service" component={Service} />
+          <Stack.Screen name="Registrar" component={Registrar} />
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar style="auto" />
