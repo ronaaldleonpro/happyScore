@@ -6,9 +6,12 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert, // Importar el componente Alert
+  Alert,
   ScrollView,
+  Image,
 } from "react-native";
+import { CameraView, Camera, useCameraPermissions } from "expo-camera"; // Importa Camera en lugar de CameraView
+import * as MediaLibrary from "expo-media-library";
 
 const Registrar = ({
   route,
@@ -18,7 +21,15 @@ const Registrar = ({
   onNextStep,
   navigation,
 }) => {
-  const { savedData } = route.params || {}; // Asegúrate de que savedIngresos exista
+  const [facing, setFacing] = useState("back");
+  const [isCameraVisible, setIsCameraVisible] = useState(false);
+  const [permission, requestPermission] = useCameraPermissions();
+  //const [cameraRef, setCameraRef] = useState(null);
+  //const [photoUri, setPhotoUri] = useState(null);
+  const [mediaLibraryPermission, requestMediaLibraryPermission] =
+    MediaLibrary.usePermissions();
+
+  const { savedData } = route.params || {};
   const [savedEgresos, setSavedEgresos] = useState([]);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
@@ -33,6 +44,21 @@ const Registrar = ({
   ]);
   const [number, onChangeNumber] = useState("");
   const [shouldNavigate, setShouldNavigate] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [photoUri, setPhotoUri] = useState(null);
+
+  // Solicitar permisos de la cámara y galería
+  useEffect(() => {
+    (async () => {
+      const cameraStatus = await Camera.requestCameraPermissionsAsync();
+      const mediaLibraryStatus = await MediaLibrary.requestPermissionsAsync();
+      setHasPermission(
+        cameraStatus.status === "granted" &&
+          mediaLibraryStatus.status === "granted"
+      );
+    })();
+  }, []);
 
   const handleContinue = () => {
     if (!value || !number) {
@@ -40,17 +66,13 @@ const Registrar = ({
       return;
     }
 
-    // Buscar el item seleccionado por su value
     const selectedItem = items.find((item) => item.value === value);
-
     if (selectedItem) {
-      // Guardar el label en lugar del value
       const newEntry = { label: selectedItem.label, amount: number };
 
       const existingEntryIndex = savedEgresos.findIndex(
         (item) => item.label === selectedItem.label
       );
-
       if (existingEntryIndex !== -1) {
         const updatedData = [...savedEgresos];
         updatedData[existingEntryIndex] = newEntry;
@@ -66,8 +88,8 @@ const Registrar = ({
           {
             text: "Sí",
             onPress: () => {
-              setValue(null); // Restablece el valor seleccionado
-              onChangeNumber(""); // Restablece el input numérico
+              setValue(null);
+              onChangeNumber("");
             },
           },
           {
@@ -88,87 +110,156 @@ const Registrar = ({
     }
   }, [shouldNavigate, savedEgresos]);
 
+  function toggleCameraFacing() {
+    setFacing((current) => (current === "back" ? "front" : "back"));
+  }
+
+  function handleOpenCamera() {
+    setIsCameraVisible(true);
+  }
+
+
+  function handleCloseCamera() {
+    setIsCameraVisible(false);
+  }
+
+  // Función para tomar una foto con la cámara trasera
+  async function takePicture() {
+    if (cameraRef) {
+      const photo = await cameraRef.takePictureAsync();
+      setIsCameraVisible(false);
+      try {
+        const asset = await MediaLibrary.createAssetAsync(photo.uri);
+        await MediaLibrary.createAlbumAsync("Mis Fotos", asset, false);
+        setPhotoUri(photo.uri);
+        console.log("Foto guardada en:", photo.uri);
+        Alert.alert("Foto guardada", "La foto ha sido guardada en la galería");
+      } catch (error) {
+        console.error("Error al guardar la foto en la galería", error);
+        Alert.alert("Error", "No se pudo guardar la foto en la galería");
+      }
+    }
+  }
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+
+  if (hasPermission === false) {
+    return <Text>No tienes acceso a la cámara o la galería.</Text>;
+  }
+
   return (
     <View style={styles.containerView}>
       <Text style={styles.stepText}>Registro</Text>
       <ScrollView style={styles.scrollContainer}>
-      <View style={styles.registroContainer}>
-        <View style={styles.inputElements}>
-          <Text style={styles.inputTitles}>Detalle del producto</Text>
-          <TextInput
-            style={styles.inputDetails}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="Detalle del producto"
-            placeholderTextColor="#808080"
-            keyboardType="text"
-          />
+        <View style={styles.registroContainer}>
+          <View style={styles.inputElements}>
+            <Text style={styles.inputTitles}>Detalle del producto</Text>
+            <TextInput
+              style={styles.inputDetails}
+              onChangeText={onChangeNumber}
+              value={number}
+              placeholder="Detalle del producto"
+              placeholderTextColor="#808080"
+              keyboardType="text"
+            />
 
-          <Text style={styles.inputTitles}>Nombre completo</Text>
-          <TextInput
-            style={styles.inputDetails}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="Nombre completo"
-            placeholderTextColor="#808080"
-            keyboardType="text"
-          />
+            <Text style={styles.inputTitles}>Nombre completo</Text>
+            <TextInput
+              style={styles.inputDetails}
+              onChangeText={onChangeNumber}
+              value={number}
+              placeholder="Nombre completo"
+              placeholderTextColor="#808080"
+              keyboardType="text"
+            />
 
-          <Text style={styles.inputTitles}>
-            Fotografía de carné de la persona
-          </Text>
-          <TextInput
-            style={styles.inputDetails}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="Fotografía de carné de la persona"
-            placeholderTextColor="#808080"
-            keyboardType="text"
-          />
+            {isCameraVisible ? (
+              <CameraView
+                style={styles.camera}
+                facing={facing}
+                ref={(ref) => setCameraRef(ref)}
+              >
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.inputTitlesActionButton} onPress={toggleCameraFacing}>
+                    <Text style={styles.inputTitlesAction}>Cambiar Cámara</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.inputTitlesActionButton} onPress={takePicture}>
+                    <Text style={styles.inputTitlesAction}>Tomar foto</Text>
+                  </TouchableOpacity>
+                  {/*<TouchableOpacity style={styles.inputTitlesActionButton} onPress={takeSelfie}>
+                    <Text style={styles.inputTitlesAction}>Tomar selfie</Text>
+                  </TouchableOpacity>*/}
+                  <TouchableOpacity style={styles.inputTitlesActionButton} onPress={handleCloseCamera}>
+                    <Text style={styles.inputTitlesAction}>Cerrar Camara</Text>
+                  </TouchableOpacity>
+                </View>
+              </CameraView>
+            ) : (
+              <View style={styles.buttonsFoto}>
+                {/*CARNE*/}
+                <Text style={styles.inputTitles}>
+                  Fotografía de carné de la persona
+                </Text>
+                <Button
+                  title="Tomar Foto"
+                  onPress={handleOpenCamera}
+                />
+                {/*SELFIE*/}
+                <Text style={styles.inputTitles}>
+                  Fotografía selfie de la persona
+                </Text>
+                <Button
+                  title="Tomar Selfie"
+                  onPress={handleOpenCamera}
+                />
+              </View>
+            )}
 
-          <Text style={styles.inputTitles}>
-            Fotografía selfie de la persona
-          </Text>
-          <TextInput
-            style={styles.inputDetails}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="Fotografía selfie de la persona"
-            placeholderTextColor="#808080"
-            keyboardType="text"
-          />
+            <Text style={styles.inputTitles}>Dirección</Text>
+            <TextInput
+              style={styles.inputDetails}
+              onChangeText={onChangeNumber}
+              value={number}
+              placeholder="Dirección"
+              placeholderTextColor="#808080"
+              keyboardType="text"
+            />
 
-          <Text style={styles.inputTitles}>Dirección</Text>
-          <TextInput
-            style={styles.inputDetails}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="Dirección"
-            placeholderTextColor="#808080"
-            keyboardType="text"
-          />
+            <Text style={styles.inputTitles}>Teléfono</Text>
+            <TextInput
+              style={styles.inputDetails}
+              onChangeText={onChangeNumber}
+              value={number}
+              placeholder="Teléfono"
+              placeholderTextColor="#808080"
+              keyboardType="text"
+            />
 
-          <Text style={styles.inputTitles}>Teléfono</Text>
-          <TextInput
-            style={styles.inputDetails}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="Teléfono"
-            placeholderTextColor="#808080"
-            keyboardType="text"
-          />
+            <Text style={styles.inputTitles}>ID de notificación push</Text>
+            <TextInput
+              style={styles.inputDetails}
+              onChangeText={onChangeNumber}
+              value={number}
+              placeholder="ID de notificación push"
+              placeholderTextColor="#808080"
+              keyboardType="text"
+            />
 
-          <Text style={styles.inputTitles}>ID de notificación push</Text>
-          <TextInput
-            style={styles.inputDetails}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="ID de notificación push"
-            placeholderTextColor="#808080"
-            keyboardType="text"
-          />
+            {/*
+            {photoUri && (
+              <View>
+                <Image
+                  source={{ uri: photoUri }}
+                  style={{ width: 300, height: 300 }}
+                />
+                <Text style={styles.photoText}>{photoUri}</Text>
+              </View>
+            )}
+            */}
+          </View>
         </View>
-      </View>
       </ScrollView>
       <Text style={styles.descriptionText}>{description}</Text>
       <TouchableOpacity
@@ -177,9 +268,6 @@ const Registrar = ({
       >
         <Text style={styles.btnContinuar}>Continuar</Text>
       </TouchableOpacity>
-      {/*<TouchableOpacity onPress={onNextStep} style={styles.btnSalirContainer}>
-        <Text style={styles.btnSalir}>Salir</Text>
-      </TouchableOpacity>*/}
     </View>
   );
 };
@@ -192,7 +280,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
   },
-  scrollContainer:{
+  scrollContainer: {
     flex: 2,
     width: "90%",
   },
@@ -221,6 +309,25 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontSize: 20,
     fontWeight: "bold",
+  },
+  inputTitlesActionButton:{
+    flex:1,
+    flexDirection:"row",
+    justifyContent:"center",
+    alignSelf:"flex-end",
+    backgroundColor:"#161F26",
+
+  },
+  inputTitlesAction: {
+    color: "#FFF",
+    backgroundColor:"#161F26",
+    margin: 0,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  buttonsFoto:{
+    width:"100%",
+    height:"auto"
   },
   inputDetails: {
     height: 45,
@@ -259,6 +366,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },*/
+  camera: {
+    flex: 1,
+    marginTop:20,
+    width:"100%",
+    height:300,
+    flexDirection:"row",
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: "transparent",
+    width:"100%",
+    height:"100%",
+       
+  },
 });
 
 export default Registrar;
